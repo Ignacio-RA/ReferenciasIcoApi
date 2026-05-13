@@ -1,0 +1,30 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "Api para sistema de referencias de informacion",
+  "keywords": [
+    "express",
+    "npm",
+    "pug",
+    "mariadb"
+  ],
+  "homepage": "https://github.com/Ignacio-RA/ReferenciasIcoApi#readme",
+  "bugs": {
+    "url": "https://github.com/Ignacio-RA/ReferenciasIcoApi/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ignacio-RA/ReferenciasIcoApi.git"
+  },
+  "license": "ISC",
+  "author": "Ignacio",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "nodemon": "^3.1.14"
+  }
+}
