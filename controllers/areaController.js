@@ -14,9 +14,7 @@ const registroArea = async (req,res)=>{
         // Se responde con un mensaje de éxito y estatus 201 (Created)
         return res.status(201).json({
             msg: "Area registrada exitosamente",
-            area: {
-                nuevaArea
-            }
+            area: nuevaArea
         })
     } catch (error) {
         console.error("Error al registrar area:", error)

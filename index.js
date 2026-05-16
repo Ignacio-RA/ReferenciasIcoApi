@@ -2,6 +2,7 @@ import express from "express"
 import usuarioRouter from "./routes/usuario_routes.js"
 import autorRouter from "./routes/autor_routes.js"
 import areaRouter from "./routes/area_routes.js"
+import asignaturaRouter from "./routes/asignatura_routes.js"
 import db from "./config/db.js"
 import './models/relaciones.js'
 
@@ -31,6 +32,7 @@ conectarDB();
 app.use("/usuarios", usuarioRouter)
 app.use("/autores", autorRouter)
 app.use('/areas', areaRouter)
+app.use('/asignaturas', asignaturaRouter)
 
 //definiendo el puerto
 const port = 4800;
