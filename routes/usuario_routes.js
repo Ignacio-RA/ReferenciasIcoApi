@@ -11,7 +11,7 @@ const usuarioRouter = express.Router();
 usuarioRouter.post('/', registroUsuario)
 
 //Ruta para obtener todos los usuarios (READ)
-usuarioRouter.get('/', obtenerUsuarios)
+usuarioRouter.get('/', obtenerUsuarios) 
 //Ruta para obtener un usuario por su ID (READ)
 usuarioRouter.get('/:id', obtenerUsuario)
 

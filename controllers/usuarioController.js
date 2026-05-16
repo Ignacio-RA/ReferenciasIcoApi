@@ -135,6 +135,7 @@ const eliminarUsuario = async (req,res)=>{
                 msg: "Usuario no encontrado."
             })
         }
+
         await usuario.destroy()
 
         // Se responde con un mensaje de éxito y estatus 200 (OK)
@@ -149,4 +150,8 @@ const eliminarUsuario = async (req,res)=>{
     }
 }
 
-export { registroUsuario, obtenerUsuarios, obtenerUsuario, actualizarUsuario, eliminarUsuario }
+export { registroUsuario, 
+    obtenerUsuarios, 
+    obtenerUsuario, 
+    actualizarUsuario, 
+    eliminarUsuario }
