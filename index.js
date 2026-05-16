@@ -1,9 +1,9 @@
 import express from "express"
-import router from "./routes/inicio_router.js"
-import usuarioRouter from "./routes/usuario_routes.js";
+import usuarioRouter from "./routes/usuario_routes.js"
 import autorRouter from "./routes/autor_routes.js"
+import areaRouter from "./routes/area_routes.js"
 import db from "./config/db.js"
-import './models/relaciones.js';
+import './models/relaciones.js'
 
 //Crear la aplicación
 const app = express()
@@ -28,9 +28,9 @@ const conectarDB = async () => {
 conectarDB();
 
 //routing
-app.use("/", router)
 app.use("/usuarios", usuarioRouter)
 app.use("/autores", autorRouter)
+app.use('/areas', areaRouter)
 
 //definiendo el puerto
 const port = 4800;
