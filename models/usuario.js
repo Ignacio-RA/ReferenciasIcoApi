@@ -32,6 +32,11 @@ const Usuario= db.define('usuario',{
         type:DataTypes.STRING,
         allowNull:false
     },
+    admin: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+    },
     fecha_registro:{
         type:DataTypes.DATE,
         allowNull:false,
@@ -49,5 +54,9 @@ const Usuario= db.define('usuario',{
         }
     }
 });
+
+Usuario.prototype.verificarPassword = function(password) {
+    return bcrypt.compareSync(password, this.password);
+}
 
 export default Usuario;

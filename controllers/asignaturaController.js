@@ -1,5 +1,5 @@
-import db from "../config/db.js";
-import { Asignatura, Area } from "../models/relaciones.js";
+import db from "../config/db.js"
+import { Asignatura, Area, Referencia} from "../models/relaciones.js"
 
 // Función para registrar una nueva asignatura (CREATE)
 const registroAsignatura = async (req, res) => {
@@ -7,7 +7,7 @@ const registroAsignatura = async (req, res) => {
         const { clave, nombre, id_area } = req.body
 
         // Verificar si el área existe
-        const existeArea = await Area.findByPk(id_area);
+        const existeArea = await Area.findByPk(id_area)
         if (!existeArea) {
             return res.status(404).json({
                 msg: `El área con ID ${id_area} no existe. No se puede asignar la asignatura.`
@@ -112,7 +112,7 @@ const actualizarAsignatura = async (req, res) => {
         // Se responde con un mensaje de éxito, la asignatura actualizada y estatus 200 (OK)
         return res.status(200).json({
             msg: "Asignatura actualizada exitosamente",
-            asignatura: asignatura
+            asignatura: asignatura,     
         })
 
     } catch (error) {

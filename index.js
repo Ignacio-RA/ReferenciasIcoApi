@@ -3,11 +3,16 @@ import usuarioRouter from "./routes/usuario_routes.js"
 import autorRouter from "./routes/autor_routes.js"
 import areaRouter from "./routes/area_routes.js"
 import asignaturaRouter from "./routes/asignatura_routes.js"
+import referenciaRouter from "./routes/referencia_rotes.js"
 import db from "./config/db.js"
 import './models/relaciones.js'
+import cors from 'cors'
 
 //Crear la aplicación
 const app = express()
+
+// Habilitar CORS para la ruta de React (puerto 5173)
+app.use(cors({ origin: 'http://localhost:5173' }))
 
 //accesos a los datos del formulario
 app.use(express.urlencoded({extended:true}))
@@ -33,6 +38,7 @@ app.use("/usuarios", usuarioRouter)
 app.use("/autores", autorRouter)
 app.use('/areas', areaRouter)
 app.use('/asignaturas', asignaturaRouter)
+app.use('/referencias', referenciaRouter)
 
 //definiendo el puerto
 const port = 4800;

@@ -22,7 +22,9 @@ const registroUsuario = async (req,res)=>{
             usuario: {
                 id: nuevoUsuario.id_usuario,
                 nombre: nuevoUsuario.nombre,
-                correo: nuevoUsuario.correo
+                correo: nuevoUsuario.correo,
+                admin: nuevoUsuario.admin,
+                fecha_registro: nuevoUsuario.fecha_registro
             }
         })
 
@@ -46,7 +48,7 @@ const registroUsuario = async (req,res)=>{
 const obtenerUsuarios = async (req,res)=>{
     try {
         const usuarios = await Usuario.findAll({
-            attributes: ['id_usuario', 'nombre', 'ap_paterno', 'ap_materno', 'correo', 'fecha_registro']
+            attributes: ['id_usuario', 'nombre', 'ap_paterno', 'ap_materno', 'correo','admin', 'fecha_registro']
         })
         // Se responde con un mensaje de éxito, la lista de usuarios y estatus 200 (OK)
         return res.status(200).json({
@@ -65,7 +67,7 @@ const obtenerUsuario = async (req,res)=>{
     try {
         const { id } = req.params
         const usuario = await Usuario.findByPk(id, {
-            attributes: ['id_usuario', 'nombre', 'ap_paterno', 'ap_materno', 'correo', 'fecha_registro']
+            attributes: ['id_usuario', 'nombre', 'ap_paterno', 'ap_materno', 'correo','admin', 'fecha_registro']
         })
         if (!usuario) {
             return res.status(404).json({
@@ -107,7 +109,8 @@ const actualizarUsuario = async (req,res)=>{
                 nombre: usuario.nombre,
                 ap_paterno: usuario.ap_paterno,
                 ap_materno: usuario.ap_materno,
-                correo: usuario.correo
+                correo: usuario.correo,
+                admin: usuario.admin,
             }
         })
     } catch (error) {
