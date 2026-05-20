@@ -1,0 +1,47 @@
+import express from "express"
+import usuarioRouter from "./routes/usuario_routes.js"
+import autorRouter from "./routes/autor_routes.js"
+import areaRouter from "./routes/area_routes.js"
+import asignaturaRouter from "./routes/asignatura_routes.js"
+import referenciaRouter from "./routes/referencia_rotes.js"
+import db from "./config/db.js"
+import './models/relaciones.js'
+import cors from 'cors'
+
+//Crear la aplicación
+const app = express()
+
+// Habilitar CORS para la ruta de React (puerto 5173)
+app.use(cors({ origin: 'http://localhost:5173' }))
+
+//accesos a los datos del formulario
+app.use(express.urlencoded({extended:true}))
+app.use(express.json())
+
+//Conexión a la base de datos
+const conectarDB = async () => {
+    try {
+        await db.authenticate();
+        
+        await db.sync(); 
+        
+        console.log("Conexion exitosa y tablas sincronizadas");
+    } catch (error) {
+        console.log("Error al conectar o sincronizar:", error);
+    }
+}
+
+conectarDB();
+
+//routing
+app.use("/usuarios", usuarioRouter)
+app.use("/autores", autorRouter)
+app.use('/areas', areaRouter)
+app.use('/asignaturas', asignaturaRouter)
+app.use('/referencias', referenciaRouter)
+
+//definiendo el puerto
+const port = 4800;
+app.listen(port, () => {
+  console.log(`Esperando peticiones en el puerto ${port}`)
+})
