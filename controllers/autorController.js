@@ -32,22 +32,40 @@ const registroAutor = async (req,res)=>{
 }
 
 // Función para obtener todos los autores (READ)
-const obtenerAutores = async (req,res)=>{
+const obtenerAutores = async (req, res) => {
     try {
         const autores = await Autor.findAll({
-            attributes: ['id_autor', 'nombre', 'ap_paterno', 'ap_materno']
-        })
-        // Se responde con un mensaje de éxito, la lista de autores y estatus 200 (OK)
+            attributes: [
+                'id_autor', 
+                'nombre', 
+                'ap_paterno', 
+                'ap_materno',
+                // Subconsulta SQL nativa para contar las referencias en la tabla intermedia
+                [
+                    db.literal(`(
+                        SELECT COUNT(*)
+                        FROM autor_referencia AS ar
+                        WHERE ar.id_autor = autor.id_autor
+                    )`),
+                    'total_referencias' // Nombre de la propiedad que llegará al cliente
+                ]
+            ],
+            order: [['ap_paterno', 'ASC']] // Opcional: Ordenados alfabéticamente por apellido
+        });
+
         return res.status(200).json({
             msg: "Autores obtenidos exitosamente",
+            total: autores.length,
             autores
-        })
+        });
+
     } catch (error) {
+        console.error("Error al obtener autores:", error);
         return res.status(500).json({
             msg: "Hubo un error en el servidor, intente más tarde."
-        })
+        });
     }
-}
+};
 
 // Función para obtener un autor por su ID (READ)
 const obtenerAutor = async (req,res)=>{

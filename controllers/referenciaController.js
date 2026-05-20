@@ -1,4 +1,4 @@
-import { Referencia, Usuario, Asignatura, Autor, AutorReferencia } from '../models/relaciones.js'
+import { Referencia, Usuario, Asignatura, Autor, AutorReferencia, Area } from '../models/relaciones.js'
 import db from '../config/db.js'
 
 const registroReferencia = async (req, res) => {
@@ -123,6 +123,135 @@ const obtenerReferencias = async (req, res) => {
 
     } catch (error) {
         console.error("Error al obtener referencias:", error);
+        return res.status(500).json({
+            msg: "Hubo un error en el servidor al recuperar las referencias."
+        });
+    }
+};
+
+const obtenerReferenciasAsignatura = async (req, res) => {
+    const { id } = req.params; // Extraemos el ID desde la URL
+
+    try {
+        const asignatura = await Asignatura.findByPk(id, {
+            attributes: ['id_asignatura', 'clave', 'nombre', 'id_area'],
+            include: {
+                model: Area,
+                attributes: ['nombre']
+            }
+        })
+
+        if (!asignatura) {
+            return res.status(404).json({
+                msg: `No se encontró una asignatura con ID ${id}.`
+            })
+        }
+
+        const referencias = await Referencia.findAll({
+            where: {
+                id_asignatura: id,
+            },
+            include: [
+                {
+                    model: Usuario,
+                    attributes: ['id_usuario', 'nombre', 'ap_paterno']
+                },
+                {
+                    model: Asignatura,
+                    attributes: ['id_asignatura', 'clave', 'nombre']
+                },
+                {
+                    model: AutorReferencia,
+                    attributes: ['id_autor'],
+                    include: [
+                        {
+                            model: Autor,
+                            attributes: ['id_autor', 'nombre', 'ap_paterno', 'ap_materno']
+                        }
+                    ]
+                }
+            ]
+            
+        });
+
+        if (referencias.length === 0) {
+            return res.status(200).json({
+                msg: `La asignatura ${asignatura.nombre} aún no tiene referencias bibliográficas asignadas.`,
+                referencias: []
+            });
+        }
+
+        return res.status(200).json({
+            msg: `Referencias de la asignatura ${asignatura.nombre} recuperadas con éxito`,
+            referencias
+        });
+
+    } catch (error) {
+        console.error(`Error al obtener la referencia ${id}:`, error);
+        return res.status(500).json({
+            msg: "Hubo un error en el servidor al recuperar la referencia."
+        });
+    }
+}
+
+const obtenerReferenciasAutor = async (req, res) => {
+    const { id } = req.params; // ID del Autor que viene en la URL
+
+    try {
+        // 1. Verificar si el autor existe primero
+        const autor = await Autor.findByPk(id, {
+            attributes: ['id_autor', 'nombre', 'ap_paterno', 'ap_materno']
+        });
+        
+        if (!autor) {
+            return res.status(404).json({
+                msg: "El autor especificado no existe."
+            });
+        }
+
+        // 2. Buscar todas las referencias asociadas a este autor
+        const referencias = await Referencia.findAll({
+            include: [
+                {
+                    model: Usuario,
+                    attributes: ['id_usuario', 'nombre', 'ap_paterno']
+                },
+                {
+                    model: Asignatura,
+                    attributes: ['id_asignatura', 'clave', 'nombre']
+                },
+                {
+                    model: AutorReferencia,
+                    attributes: ['id_autor'],
+                    required: true, // <--- CRUCIAL: Esto convierte el LEFT JOIN en un INNER JOIN
+                    where: { id_autor: id }, // <--- AQUÍ HACEMOS EL FILTRO en la tabla intermedia
+                    include: [
+                        {
+                            model: Autor,
+                            attributes: ['id_autor', 'nombre', 'ap_paterno', 'ap_materno']
+                        }
+                    ]
+                }
+            ],
+            order: [['id_referencia', 'DESC']]
+        });
+
+        // 3. Validar si el autor tiene referencias registradas
+        if (referencias.length === 0) {
+            return res.status(200).json({
+                msg: `El autor ${autor.nombre} ${autor.ap_paterno} aún no tiene referencias bibliográficas asignadas.`,
+                referencias: []
+            });
+        }
+
+        return res.status(200).json({
+            msg: `Referencias del autor ${autor.nombre} ${autor.ap_paterno} recuperadas con éxito.`,
+            total: referencias.length,
+            referencias
+        });
+
+    } catch (error) {
+        console.error(`Error al obtener las referencias del autor ${id}:`, error);
         return res.status(500).json({
             msg: "Hubo un error en el servidor al recuperar las referencias."
         });
@@ -301,5 +430,8 @@ export {
     obtenerReferencias,
     obtenerReferencia,
     actualizarReferencia,
-    eliminarReferencia
+    eliminarReferencia,
+
+    obtenerReferenciasAsignatura,
+    obtenerReferenciasAutor
 }

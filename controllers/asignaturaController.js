@@ -44,7 +44,16 @@ const registroAsignatura = async (req, res) => {
 const obtenerAsignaturas = async (req, res) => {
     try {
         const asignaturas = await Asignatura.findAll({
-            attributes: ['id_asignatura', 'clave', 'nombre', 'id_area'],
+            attributes: ['id_asignatura', 'clave', 'nombre', 'id_area',
+                [
+                    db.literal(`(
+                        SELECT COUNT(*)
+                        FROM referencia AS r
+                        WHERE r.id_asignatura = asignatura.id_asignatura
+                    )`),
+                    'total_referencias'
+                ]
+            ],
             include: {
                 model: Area,
                 attributes: ['nombre']
@@ -54,6 +63,7 @@ const obtenerAsignaturas = async (req, res) => {
         // Se responde con un mensaje de éxito, la lista de asignaturas y estatus 200 (OK)
         return res.status(200).json({
             msg: "Asignaturas obtenidas exitosamente",
+            total: asignaturas.length,
             asignaturas
         })
     } catch (error) {

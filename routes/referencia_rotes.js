@@ -3,7 +3,9 @@ import { registroReferencia,
     obtenerReferencias, 
     obtenerReferencia,
     actualizarReferencia,
-    eliminarReferencia } from "../controllers/referenciaController.js"
+    eliminarReferencia,
+    obtenerReferenciasAsignatura,
+    obtenerReferenciasAutor } from "../controllers/referenciaController.js"
 import checkAuth from "../middleware/checkAuth.js";
 import checkAdmin from "../middleware/checkAdmin.js";
 
@@ -13,7 +15,7 @@ const referenciaRouter = express.Router();
 referenciaRouter.post('/', checkAuth, registroReferencia)
 
 //Ruta para obtener todas las referencias (READ)
-referenciaRouter.get('/', checkAuth, obtenerReferencias)
+referenciaRouter.get('/',  obtenerReferencias)
 //Ruta para obtener una sola referencia por su ID (READ)
 referenciaRouter.get('/:id', checkAuth, obtenerReferencia)
 
@@ -22,5 +24,10 @@ referenciaRouter.patch('/:id', checkAuth, actualizarReferencia)
 
 //Ruta para eliminar una referencia por su ID (DELETE)
 referenciaRouter.delete('/:id', checkAuth, checkAdmin, eliminarReferencia)
+
+//Ruta para obtener referencias por asignatura
+referenciaRouter.get('/asignatura/:id', obtenerReferenciasAsignatura)
+//Ruta para obtener referencias por autor
+referenciaRouter.get('/autor/:id', obtenerReferenciasAutor)
 
 export default referenciaRouter

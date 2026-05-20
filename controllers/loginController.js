@@ -46,7 +46,7 @@ const login = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error en el proceso de login:", error);
+        console.error("Error en el proceso de login: ", error);
         return res.status(500).json({
             msg: "Hubo un error en el servidor al intentar iniciar sesión."
         });
