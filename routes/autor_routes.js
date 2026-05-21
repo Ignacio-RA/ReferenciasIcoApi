@@ -10,7 +10,7 @@ import checkAdmin from "../middleware/checkAdmin.js"
 const autorRouter = express.Router();
 
 // Ruta para registrar un nuevo autor (CREATE)
-autorRouter.post('/', checkAuth,registroAutor)
+autorRouter.post('/', checkAuth, registroAutor)
 
 // Ruta para obtener todos los autores (READ)
 autorRouter.get('/', checkAuth, obtenerAutores)

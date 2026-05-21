@@ -5,7 +5,8 @@ import { registroReferencia,
     actualizarReferencia,
     eliminarReferencia,
     obtenerReferenciasAsignatura,
-    obtenerReferenciasAutor } from "../controllers/referenciaController.js"
+    obtenerReferenciasAutor,
+    obtenerReferenciasUsuario } from "../controllers/referenciaController.js"
 import checkAuth from "../middleware/checkAuth.js";
 import checkAdmin from "../middleware/checkAdmin.js";
 
@@ -29,5 +30,7 @@ referenciaRouter.delete('/:id', checkAuth, checkAdmin, eliminarReferencia)
 referenciaRouter.get('/asignatura/:id', obtenerReferenciasAsignatura)
 //Ruta para obtener referencias por autor
 referenciaRouter.get('/autor/:id', obtenerReferenciasAutor)
+//Ruta para obtener referencias por usuario
+referenciaRouter.get('/usuario/:id', checkAuth, obtenerReferenciasUsuario)
 
 export default referenciaRouter

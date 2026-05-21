@@ -1,6 +1,5 @@
 import db from "../config/db.js";
-import Area from "../models/area.js";
-import "../models/relaciones.js";
+import { Area, Asignatura } from "../models/relaciones.js";
 
 //Función para registrar un nuevo area (CREATE)
 const registroArea = async (req,res)=>{
@@ -25,24 +24,38 @@ const registroArea = async (req,res)=>{
 }
 
 // Funcion para obtener todas las areas (READ)
-const obtenerAreas = async (req,res)=>{
+const obtenerAreas = async (req, res) => {
     try {
         const areas = await Area.findAll({
-            attributes: ['id_area', 'nombre']
-        })
+            attributes: [
+                'id_area', 
+                'nombre',
+                // Subconsulta SQL nativa para contar las asignaturas por área
+                [
+                    db.literal(`(
+                        SELECT COUNT(*)
+                        FROM asignatura AS a
+                        WHERE a.id_area = area.id_area
+                    )`),
+                    'total_asignaturas' // La propiedad que aparecerá en tu JSON
+                ]
+            ],
+            order: [['id_area', 'ASC']] // Ordenadas por su ID
+        });
 
-        // Se responde con un mensaje de éxito, la lista de areas y estatus 200 (OK)
         return res.status(200).json({
             msg: "Areas obtenidas exitosamente",
+            total: areas.length,
             areas
-        })
+        });
+
     } catch (error) {
+        console.error("Error al obtener áreas:", error);
         return res.status(500).json({
             msg: "Hubo un error en el servidor, intente más tarde."
-        })
+        });
     }
-
-}
+};
 
 // Funcion para obtener un area por su ID (READ)
 const obtenerArea = async (req,res)=>{

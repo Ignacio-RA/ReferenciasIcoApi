@@ -31,17 +31,18 @@ const registroReferencia = async (req, res) => {
         }
 
         // VALIDACIONES DE NEGOCIO (Campos según tipo de fuente)
-        if (tipo_fuente === 'libro' && !editorial) {
+        if (tipo_fuente === 'libro' && !anio_publicacion && !editorial && !ciudad_pais) {
             await t.rollback();
             return res.status(400).json({ msg: "Para un libro, la 'editorial' es requerida." });
         }
-        if (tipo_fuente === 'articulo' && (!volumen || !paginas)) {
+        //Nombre_revista por agregar
+        if (tipo_fuente === 'articulo' && !anio_publicacion && !volumen && !numero && !paginas) {
             await t.rollback();
             return res.status(400).json({ msg: "Para un artículo, 'volumen' y 'paginas' son requeridos." });
         }
-        if (tipo_fuente === 'pagina_web' && !url) {
+        if (tipo_fuente === 'pagina_web' && !url && !fecha_consulta && !anio_publicacion) {
             await t.rollback();
-            return res.status(400).json({ msg: "Para una página web, la 'url' es requerida." });
+            return res.status(400).json({ msg: "Para una página web, la 'url', 'fecha_consulta' y 'anio_publicacion' son requeridas." });
         }
 
         // CREAR LA REFERENCIA PRIMERO
@@ -129,6 +130,7 @@ const obtenerReferencias = async (req, res) => {
     }
 };
 
+// Función para obtener referencias por asignatura
 const obtenerReferenciasAsignatura = async (req, res) => {
     const { id } = req.params; // Extraemos el ID desde la URL
 
@@ -194,6 +196,7 @@ const obtenerReferenciasAsignatura = async (req, res) => {
     }
 }
 
+// Función para obtener referencias por autor
 const obtenerReferenciasAutor = async (req, res) => {
     const { id } = req.params; // ID del Autor que viene en la URL
 
@@ -257,6 +260,68 @@ const obtenerReferenciasAutor = async (req, res) => {
         });
     }
 };
+
+// Función para obtener referencias por usuario
+const obtenerReferenciasUsuario = async (req, res) => {
+    const { id } = req.params; // Extraemos el ID desde la URL
+
+    try {
+        const usuario = await Usuario.findByPk(id, {
+            attributes: ['id_usuario', 'nombre']
+        });
+
+        if (!usuario) {
+            return res.status(404).json({
+                msg: `No se encontró un usuario con ID ${id}.`
+            })
+        }
+
+        const referencias = await Referencia.findAll({
+            where: {
+                id_usuario: id,
+            },
+            include: [
+                {
+                    model: Usuario,
+                    attributes: ['id_usuario', 'nombre', 'ap_paterno']
+                },
+                {
+                    model: Asignatura,
+                    attributes: ['id_asignatura', 'clave', 'nombre']
+                },
+                {
+                    model: AutorReferencia,
+                    attributes: ['id_autor'],
+                    include: [
+                        {
+                            model: Autor,
+                            attributes: ['id_autor', 'nombre', 'ap_paterno', 'ap_materno']
+                        }
+                    ]
+                }
+            ]
+            
+        });
+
+        if (referencias.length === 0) {
+            return res.status(200).json({
+                msg: `El usuario ${usuario.nombre} aún no tiene referencias bibliográficas.`,
+                referencias: []
+            });
+        }
+
+        return res.status(200).json({
+            msg: `Referencias del usuario ${usuario.nombre} recuperadas con éxito`,
+            referencias
+        });
+
+    } catch (error) {
+        console.error(`Error al obtener la referencia ${id}:`, error);
+        return res.status(500).json({
+            msg: "Hubo un error en el servidor al recuperar la referencia."
+        });
+    }
+}
 
 // Función para obtener una sola referencia por su ID (READ ONE)
 const obtenerReferencia = async (req, res) => {
@@ -433,5 +498,6 @@ export {
     eliminarReferencia,
 
     obtenerReferenciasAsignatura,
-    obtenerReferenciasAutor
+    obtenerReferenciasAutor,
+    obtenerReferenciasUsuario
 }
