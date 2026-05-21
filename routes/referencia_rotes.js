@@ -16,7 +16,7 @@ const referenciaRouter = express.Router();
 referenciaRouter.post('/', checkAuth, registroReferencia)
 
 //Ruta para obtener todas las referencias (READ)
-referenciaRouter.get('/',  obtenerReferencias)
+referenciaRouter.get('/', checkAuth,  obtenerReferencias)
 //Ruta para obtener una sola referencia por su ID (READ)
 referenciaRouter.get('/:id', checkAuth, obtenerReferencia)
 
@@ -27,9 +27,9 @@ referenciaRouter.patch('/:id', checkAuth, actualizarReferencia)
 referenciaRouter.delete('/:id', checkAuth, checkAdmin, eliminarReferencia)
 
 //Ruta para obtener referencias por asignatura
-referenciaRouter.get('/asignatura/:id', obtenerReferenciasAsignatura)
+referenciaRouter.get('/asignatura/:id', checkAuth, obtenerReferenciasAsignatura)
 //Ruta para obtener referencias por autor
-referenciaRouter.get('/autor/:id', obtenerReferenciasAutor)
+referenciaRouter.get('/autor/:id', checkAuth,  obtenerReferenciasAutor)
 //Ruta para obtener referencias por usuario
 referenciaRouter.get('/usuario/:id', checkAuth, obtenerReferenciasUsuario)
 
